@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:register_cep/model/cep_model.dart';
 import 'package:register_cep/model/clients_model.dart';
 import 'package:register_cep/page/home/widget/card_%20register.dart';
+import 'package:register_cep/page/listclients/clients_list.dart';
 import 'package:register_cep/services/cep_services.dart'; // Substitua pelo caminho correto do seu serviço CepService
 
 class HomePage extends StatefulWidget {
@@ -19,14 +21,21 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController cidadeController = TextEditingController();
   final TextEditingController cepController = TextEditingController();
   bool isCardOpen = false;
-  List<ClienteModel> clientes = [];
+  List<ClienteModel> cliente = [];
   CepService cepService = CepService();
+  List<ClienteModel> clientes = [];
 
   void toggleCard() {
     setState(() {
       isCardOpen = !isCardOpen;
     });
   }
+  
+  void removeCliente(int index) {
+  setState(() {
+    clientes.removeAt(index);
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -62,16 +71,27 @@ class _HomePageState extends State<HomePage> {
               onSavePressed: () async {
                 setState(() {
                   isCardOpen = false;
+                  clientes.add(
+                    ClienteModel(
+                      nome: nomeController.text,
+                      rua: ruaController.text,
+                      bairro: bairroController.text,
+                      numero: numeroController.text,
+                      cidade: cidadeController.text,
+                      cep: cepController.text,
+                    ),
+                  );
+                  nomeController.clear();
+                  ruaController.clear();
+                  bairroController.clear();
+                  numeroController.clear();
+                  cidadeController.clear();
+                  cepController.clear();
                 });
 
-                // Obtenha o CEP do campo cepController
                 String cep = cepController.text;
-
-                // Use o cepService para buscar informações do CEP
                 CepModel? cepData = await cepService.fetchCep(cep);
-
                 if (cepData != null) {
-                  // Preencha os campos de rua, bairro e cidade com os dados do CEP
                   ruaController.text = cepData.logradouro ?? '';
                   bairroController.text = cepData.bairro ?? '';
                   cidadeController.text = cepData.localidade ?? '';
@@ -79,9 +99,7 @@ class _HomePageState extends State<HomePage> {
                   // Lidar com erros, como CEP não encontrado
                   print('CEP não encontrado ou ocorreu um erro.');
                 }
-
-                // Adicione o cliente à lista
-                clientes.add(
+                cliente.add(
                   ClienteModel(
                     nome: nomeController.text,
                     rua: ruaController.text,
@@ -92,16 +110,32 @@ class _HomePageState extends State<HomePage> {
                   ),
                 );
 
-                print(clientes[0].toJson());
+                print(cliente[0].toJson());
               },
               isCardOpen: isCardOpen,
             ),
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: toggleCard,
-        child: const Icon(Icons.add),
+      floatingActionButton: SpeedDial(
+        animatedIcon: AnimatedIcons.menu_close,
+        children: [
+          SpeedDialChild(
+            child: const Icon(Icons.add),
+            label: 'Adicionar',
+            onTap: toggleCard,
+          ),
+          SpeedDialChild(
+            child: const Icon(Icons.list),
+            label: 'Lista de Clientes',
+            onTap: () {
+              Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ListClients(clients: clientes, onRemove: removeCliente, onEdit: null,),
+      ),);
+            },
+          ),
+        ],
       ),
     );
   }
