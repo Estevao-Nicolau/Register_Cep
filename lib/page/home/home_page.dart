@@ -14,6 +14,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final TextEditingController searchController = TextEditingController();
   final TextEditingController nomeController = TextEditingController();
   final TextEditingController ruaController = TextEditingController();
   final TextEditingController bairroController = TextEditingController();
@@ -24,6 +25,23 @@ class _HomePageState extends State<HomePage> {
   List<ClienteModel> cliente = [];
   CepService cepService = CepService();
   List<ClienteModel> clientes = [];
+  List<ClienteModel> searchResults = [];
+  void searchClientes(String query) {
+    setState(() {
+      searchResults = clientes.where((cliente) {
+        return cliente.nome.toLowerCase().contains(query.toLowerCase());
+      }).toList();
+    });
+  }
+
+  void openEditDialog(ClienteModel cliente) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return EditClientDialog(cliente: cliente);
+      },
+    );
+  }
 
   void toggleCard() {
     setState(() {
@@ -86,7 +104,6 @@ class _HomePageState extends State<HomePage> {
             ),
             TextButton(
               onPressed: () {
-                // Atualize o cliente existente com os novos valores
                 setState(() {
                   clientes[index] = ClienteModel(
                     nome: nomeController.text,
@@ -106,10 +123,7 @@ class _HomePageState extends State<HomePage> {
       },
     );
 
-    if (result == true) {
-      // Cliente editado com sucesso
-      // Você pode adicionar uma mensagem de sucesso ou realizar outras ações aqui
-    }
+    if (result == true) {}
   }
 
   void removeCliente(int index) {
@@ -155,6 +169,10 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.all(16.0),
             child: Center(
               child: TextFormField(
+                controller: searchController,
+                onChanged: (query) {
+                  searchClientes(query);
+                },
                 decoration: InputDecoration(
                   labelText: 'Pesquisa',
                   border: OutlineInputBorder(
@@ -164,6 +182,35 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
+          ),
+          // Lista de sugestões
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: searchResults.length > 4 ? 4 : searchResults.length,
+            itemBuilder: (context, index) {
+              final cliente = searchResults[index];
+              return ListTile(
+                title: Text(cliente.nome),
+                // Outros detalhes do cliente aqui
+                onTap: () {
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemCount:
+                        searchResults.length > 4 ? 4 : searchResults.length,
+                    itemBuilder: (context, index) {
+                      final cliente = searchResults[index];
+                      return ListTile(
+                        title: Text(cliente.nome),
+                        onTap: () {
+                          openEditDialog(cliente);
+                        },
+                      );
+                    },
+                  );
+                  fillFormFieldsWithCliente(clientes.indexOf(cliente));
+                },
+              );
+            },
           ),
           Expanded(
             child: CardRegister(
@@ -193,7 +240,6 @@ class _HomePageState extends State<HomePage> {
                   cidadeController.clear();
                   cepController.clear();
                 });
-
                 String cep = cepController.text;
                 CepModel? cepData = await cepService.fetchCep(cep);
                 if (cepData != null) {
@@ -246,6 +292,33 @@ class _HomePageState extends State<HomePage> {
             },
           ),
         ],
+      ),
+    );
+  }
+}
+
+class EditClientDialog extends StatelessWidget {
+  final ClienteModel cliente;
+
+  const EditClientDialog({super.key, required this.cliente});
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Editar Cliente'),
+      content: CardRegister(
+        nomeController: TextEditingController(text: cliente.nome),
+        ruaController: TextEditingController(text: cliente.rua),
+        bairroController: TextEditingController(text: cliente.bairro),
+        numeroController: TextEditingController(text: cliente.numero),
+        cidadeController: TextEditingController(text: cliente.cidade),
+        cepController: TextEditingController(text: cliente.cep),
+        onSavePressed: () {
+          // Implemente a lógica para salvar as alterações aqui
+          // Você pode atualizar o objeto cliente com os valores dos controladores
+          Navigator.of(context).pop(); // Feche o diálogo após salvar
+        },
+        isCardOpen: true, // Abra o card no diálogo
       ),
     );
   }
