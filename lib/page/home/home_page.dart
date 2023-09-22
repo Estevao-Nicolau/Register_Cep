@@ -30,11 +30,105 @@ class _HomePageState extends State<HomePage> {
       isCardOpen = !isCardOpen;
     });
   }
-  
+
+  void editCliente(int index) async {
+  final result = await showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Editar Cliente'),
+        content: SingleChildScrollView(
+          child: Column(
+            children: [
+              TextFormField(
+                controller: nomeController,
+                decoration: const InputDecoration(labelText: 'Nome'),
+              ),
+              TextFormField(
+                controller: ruaController,
+                decoration: const InputDecoration(labelText: 'Rua'),
+              ),
+              TextFormField(
+                controller: bairroController,
+                decoration: const InputDecoration(labelText: 'Bairro'),
+              ),
+              TextFormField(
+                controller: numeroController,
+                decoration: const InputDecoration(labelText: 'Número'),
+              ),
+              TextFormField(
+                controller: cidadeController,
+                decoration: const InputDecoration(labelText: 'Cidade'),
+              ),
+              TextFormField(
+                controller: cepController,
+                decoration: const InputDecoration(labelText: 'CEP'),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(null);
+            },
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              // Atualize o cliente existente com os novos valores
+              setState(() {
+                clientes[index] = ClienteModel(
+                  nome: nomeController.text,
+                  rua: ruaController.text,
+                  bairro: bairroController.text,
+                  numero: numeroController.text,
+                  cidade: cidadeController.text,
+                  cep: cepController.text,
+                );
+              });
+              Navigator.of(context).pop(true);
+            },
+            child: const Text('Salvar'),
+          ),
+        ],
+      );
+    },
+  );
+
+  if (result == true) {
+    // Cliente editado com sucesso
+    // Você pode adicionar uma mensagem de sucesso ou realizar outras ações aqui
+  }
+}
+
   void removeCliente(int index) {
-  setState(() {
-    clientes.removeAt(index);
-  });
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Excluir Cliente'),
+        content: const Text('Tem certeza de que deseja excluir este cliente?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                clientes.removeAt(index);
+              });
+              Navigator.of(context).pop();
+            },
+            child: const Text('Confirmar'),
+          ),
+        ],
+      );
+    },
+  );
 }
 
   @override
@@ -130,9 +224,14 @@ class _HomePageState extends State<HomePage> {
             label: 'Lista de Clientes',
             onTap: () {
               Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => ListClients(clients: clientes, onRemove: removeCliente, onEdit: null,),
-      ),);
+                MaterialPageRoute(
+                  builder: (context) => ListClients(
+                    clients: clientes,
+                    onRemove: removeCliente,
+                    onEdit: editCliente,
+                  ),
+                ),
+              );
             },
           ),
         ],

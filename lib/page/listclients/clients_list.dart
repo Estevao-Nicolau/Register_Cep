@@ -3,8 +3,9 @@ import 'package:register_cep/model/clients_model.dart';
 class ListClients extends StatelessWidget {
   final List<ClienteModel> clients;
   final Function(int) onRemove;
+  final Function(int) onEdit;
 
-  const ListClients({Key? key, required this.clients, required this.onRemove, required onEdit})
+  const ListClients({Key? key, required this.clients, required this.onRemove, required this.onEdit, })
       : super(key: key);
 
   @override
@@ -28,7 +29,7 @@ class ListClients extends StatelessWidget {
                   IconButton(
                     icon: const Icon(Icons.edit),
                     onPressed: () {
-                     
+                     onEdit(index);
                     },
                     color: Colors.orange, // Cor laranja para o botão de edição
                   ),
