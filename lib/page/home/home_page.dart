@@ -186,28 +186,20 @@ class _HomePageState extends State<HomePage> {
           // Lista de sugestões
           ListView.builder(
             shrinkWrap: true,
-            itemCount: searchResults.length > 4 ? 4 : searchResults.length,
+            itemCount: searchController.text.isEmpty
+                ? 0
+                : (searchResults.length > 4 ? 4 : searchResults.length),
             itemBuilder: (context, index) {
               final cliente = searchResults[index];
               return ListTile(
                 title: Text(cliente.nome),
-                // Outros detalhes do cliente aqui
                 onTap: () {
-                  ListView.builder(
-                    shrinkWrap: true,
-                    itemCount:
-                        searchResults.length > 4 ? 4 : searchResults.length,
-                    itemBuilder: (context, index) {
-                      final cliente = searchResults[index];
-                      return ListTile(
-                        title: Text(cliente.nome),
-                        onTap: () {
-                          openEditDialog(cliente);
-                        },
-                      );
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return ViewClientDetailsDialog(cliente: cliente);
                     },
                   );
-                  fillFormFieldsWithCliente(clientes.indexOf(cliente));
                 },
               );
             },
@@ -314,12 +306,44 @@ class EditClientDialog extends StatelessWidget {
         cidadeController: TextEditingController(text: cliente.cidade),
         cepController: TextEditingController(text: cliente.cep),
         onSavePressed: () {
-          // Implemente a lógica para salvar as alterações aqui
-          // Você pode atualizar o objeto cliente com os valores dos controladores
-          Navigator.of(context).pop(); // Feche o diálogo após salvar
+          Navigator.of(context).pop();
         },
         isCardOpen: true, // Abra o card no diálogo
       ),
+    );
+  }
+}
+
+class ViewClientDetailsDialog extends StatelessWidget {
+  final ClienteModel cliente;
+
+  const ViewClientDetailsDialog({super.key, required this.cliente});
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Detalhes do Cliente'),
+      content: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Nome: ${cliente.nome}'),
+            Text('Rua: ${cliente.rua}'),
+            Text('Bairro: ${cliente.bairro}'),
+            Text('Número: ${cliente.numero}'),
+            Text('Cidade: ${cliente.cidade}'),
+            Text('CEP: ${cliente.cep}'),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('Fechar'),
+        ),
+      ],
     );
   }
 }
