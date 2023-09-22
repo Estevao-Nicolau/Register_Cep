@@ -160,7 +160,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cadastro'),
+        title: const Text('Bem vindo'),
         automaticallyImplyLeading: false,
       ),
       body: Column(
