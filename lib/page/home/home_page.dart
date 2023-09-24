@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
   void searchClientes(String query) {
     setState(() {
       searchResults = clientes.where((cliente) {
-        return cliente.nome.toLowerCase().contains(query.toLowerCase());
+        return cliente.nome!.toLowerCase().contains(query.toLowerCase());
       }).toList();
     });
   }
@@ -50,12 +50,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   void fillFormFieldsWithCliente(int index) {
-    nomeController.text = clientes[index].nome;
-    ruaController.text = clientes[index].rua;
-    bairroController.text = clientes[index].bairro;
-    numeroController.text = clientes[index].numero;
-    cidadeController.text = clientes[index].cidade;
-    cepController.text = clientes[index].cep;
+    nomeController.text = clientes[index].nome!;
+    ruaController.text = clientes[index].rua!;
+    bairroController.text = clientes[index].bairro!;
+    numeroController.text = clientes[index].numero!;
+    cidadeController.text = clientes[index].cidade!;
+    cepController.text = clientes[index].cep!;
   }
 
   void editCliente(int index) async {
@@ -192,7 +192,7 @@ class _HomePageState extends State<HomePage> {
             itemBuilder: (context, index) {
               final cliente = searchResults[index];
               return ListTile(
-                title: Text(cliente.nome),
+                title: Text(cliente.nome!),
                 onTap: () {
                   showDialog(
                     context: context,

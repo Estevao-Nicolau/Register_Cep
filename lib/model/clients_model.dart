@@ -1,10 +1,10 @@
 class ClienteModel {
-  String nome;
-  String rua;
-  String bairro;
-  String numero;
-  String cidade;
-  String cep;
+  String? nome;
+  String? bairro;
+  String? rua;
+  String? numero;
+  String? cidade;
+  String? cep;
 
   ClienteModel({
     required this.nome,

@@ -8,7 +8,7 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
-  bool _showPassword = false; // Variável para controlar a visibilidade da senha
+  bool _showPassword = false; 
 
   @override
   Widget build(BuildContext context) {
