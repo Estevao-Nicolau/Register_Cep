@@ -26,16 +26,16 @@ class _HomePageState extends State<HomePage> {
   List<ClienteModel> cliente = [];
   CepService cepService = CepService();
   List<ClienteModel> clientes = [];
-  List<ClienteModel> searchResults = [];
-  final Back4appAPI back4appAPI =
-      Back4appAPI(); // Crie uma instância da classe Back4appAPI
 
-  void searchClientes(String query) {
-    setState(() {
-      searchResults = clientes.where((cliente) {
-        return cliente.nome!.toLowerCase().contains(query.toLowerCase());
-      }).toList();
-    });
+  final Back4appAPI back4appAPI = Back4appAPI();
+  List<ClienteModel>? searchResults;
+  List<ClienteModel>? clients;
+  final api = Back4appAPI();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDataFromApi();
   }
 
   void openEditDialog(ClienteModel cliente) {
@@ -60,6 +60,49 @@ class _HomePageState extends State<HomePage> {
     numeroController.text = clientes[index].numero!;
     cidadeController.text = clientes[index].cidade!;
     cepController.text = clientes[index].cep!;
+  }
+
+  void searchClientes(List<ClienteModel> clientes, String query) {
+    setState(() {
+      if (query.isEmpty) {
+        // Se a consulta estiver vazia, exibir todos os clientes.
+        searchResults = clientes;
+      } else {
+        // Caso contrário, filtrar os clientes pelo nome.
+        searchResults = clientes
+            .where((cliente) =>
+                cliente.nome?.toLowerCase().contains(query.toLowerCase()) ??
+                false)
+            .toList();
+      }
+    });
+  }
+
+  Future<void> _loadDataFromApi() async {
+    try {
+      final apiResults = await api.fetchData();
+
+      if (apiResults != null) {
+        setState(() {
+          clients = apiResults.map((result) {
+            return ClienteModel(
+              nome: result.name,
+              rua: result.address?.road,
+              bairro: result.address?.bairro,
+              numero: result.address?.number,
+              cidade: result.address?.city,
+              cep: result.address?.cep,
+            );
+          }).toList();
+          searchResults = clients;
+          
+        });
+      } else {
+        // Lidar com o caso em que apiResults é nulo ou vazio, se necessário.
+      }
+    } catch (e) {
+      // Lidar com erros, por exemplo, exibir uma mensagem de erro.
+    }
   }
 
   void editCliente(int index) async {
@@ -175,7 +218,9 @@ class _HomePageState extends State<HomePage> {
               child: TextFormField(
                 controller: searchController,
                 onChanged: (query) {
-                  searchClientes(query);
+                  if (clients != null) {
+                    searchClientes(clients!, query);
+                  }
                 },
                 decoration: InputDecoration(
                   labelText: 'Pesquisa',
@@ -192,9 +237,9 @@ class _HomePageState extends State<HomePage> {
             shrinkWrap: true,
             itemCount: searchController.text.isEmpty
                 ? 0
-                : (searchResults.length > 4 ? 4 : searchResults.length),
+                : (searchResults!.length > 4 ? 4 : searchResults!.length),
             itemBuilder: (context, index) {
-              final cliente = searchResults[index];
+              final cliente = searchResults![index];
               return ListTile(
                 title: Text(cliente.nome!),
                 onTap: () {
@@ -208,6 +253,7 @@ class _HomePageState extends State<HomePage> {
               );
             },
           ),
+
           Expanded(
             child: CardRegister(
               nomeController: nomeController,
