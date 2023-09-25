@@ -19,7 +19,7 @@ class ListClients extends StatefulWidget {
 }
 
 class _ListClientsState extends State<ListClients> {
-  List<ClienteModel>? clients; // Alterado para ser uma lista nula inicialmente
+  List<ClienteModel>? clients; 
   final api = Back4appAPI();
 
   @override
@@ -29,29 +29,30 @@ class _ListClientsState extends State<ListClients> {
   }
 
   Future<void> _loadDataFromApi() async {
-    try {
-      final apiResults = await api.fetchData();
+  try {
+    final apiResults = await api.fetchData();
 
-      if (apiResults != null) {
-        setState(() {
-          clients = apiResults.map((result) {
-            return ClienteModel(
-              nome: result.name,
-              rua: result.address?.road,
-              bairro: result.address?.bairro,
-              numero: result.address?.number,
-              cidade: result.address?.city,
-              cep: result.address?.cep,
-            );
-          }).toList();
-        });
-      } else {
-        // Lidar com o caso em que apiResults é nulo ou vazio, se necessário.
-      }
-    } catch (e) {
-      // Lidar com erros, por exemplo, exibir uma mensagem de erro.
+    if (apiResults != null) {
+      setState(() {
+        clients = apiResults.map((result) {
+          return ClienteModel(
+            nome: result.name,
+            rua: result.address?.road,
+            bairro: result.address?.bairro,
+            numero: result.address?.number,
+            cidade: result.address?.city,
+            cep: result.address?.cep,
+          );
+        }).toList();
+      });
+    } else {
+      // Lidar com o caso em que apiResults é nulo ou vazio, se necessário.
     }
+  } catch (e) {
+    // Lidar com erros, por exemplo, exibir uma mensagem de erro.
   }
+}
+
 
   @override
   Widget build(BuildContext context) {

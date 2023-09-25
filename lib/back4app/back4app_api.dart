@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:register_cep/model/back4app_model.dart';
+import 'package:register_cep/model/clients_model.dart';
 
 class Back4appAPI {
   static const String apiUrl = 'https://parseapi.back4app.com/classes/UserData';
@@ -30,4 +31,37 @@ class Back4appAPI {
       throw Exception('Failed to load data');
     }
   }
+
+  Future<void> postData(ClienteModel cliente) async {
+  var headers = {
+    'X-Parse-Application-Id': applicationId,
+    'X-Parse-REST-API-Key': restApiKey,
+    'Content-Type': 'application/json'
+  };
+  var request = http.Request(
+      'POST', Uri.parse('https://parseapi.back4app.com/classes/UserData'));
+  request.body = json.encode({
+    "name": cliente.nome,
+    "password": 'senha',
+    "email": 'testt email',
+    "address": {
+      "cep": cliente.cep,
+      "client": cliente.nome,
+      "road": cliente.rua,
+      "bairro": cliente.bairro,
+      "number": cliente.numero,
+      "city": cliente.cidade
+    }
+  });
+  request.headers.addAll(headers);
+
+  http.StreamedResponse response = await request.send();
+
+  if (response.statusCode == 201) {
+    print('Cliente salvo com sucesso.');
+  } else {
+    print('Erro ao salvar o cliente: ${response.reasonPhrase}');
+  }
+}
+
 }

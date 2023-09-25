@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:register_cep/back4app/back4app_api.dart';
 import 'package:register_cep/model/cep_model.dart';
 import 'package:register_cep/model/clients_model.dart';
 import 'package:register_cep/page/home/widget/card_%20register.dart';
@@ -26,6 +27,9 @@ class _HomePageState extends State<HomePage> {
   CepService cepService = CepService();
   List<ClienteModel> clientes = [];
   List<ClienteModel> searchResults = [];
+  final Back4appAPI back4appAPI =
+      Back4appAPI(); // Crie uma instância da classe Back4appAPI
+
   void searchClientes(String query) {
     setState(() {
       searchResults = clientes.where((cliente) {
@@ -213,18 +217,18 @@ class _HomePageState extends State<HomePage> {
               cidadeController: cidadeController,
               cepController: cepController,
               onSavePressed: () async {
-                setState(() {
+                setState(() async {
                   isCardOpen = false;
-                  clientes.add(
-                    ClienteModel(
-                      nome: nomeController.text,
-                      rua: ruaController.text,
-                      bairro: bairroController.text,
-                      numero: numeroController.text,
-                      cidade: cidadeController.text,
-                      cep: cepController.text,
-                    ),
+                  ClienteModel novoCliente = ClienteModel(
+                    nome: nomeController.text,
+                    rua: ruaController.text,
+                    bairro: bairroController.text,
+                    numero: numeroController.text,
+                    cidade: cidadeController.text,
+                    cep: cepController.text,
                   );
+                  // Chamar o método postData da classe Back4appAPI para salvar o cliente
+                  await back4appAPI.postData(novoCliente);
                   nomeController.clear();
                   ruaController.clear();
                   bairroController.clear();
