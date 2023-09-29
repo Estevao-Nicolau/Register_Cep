@@ -64,6 +64,43 @@ class Back4appAPI {
     }
   }
 
+  Future<void> putData(String objectId, ClienteModel cliente) async {
+    var headers = {
+      'X-Parse-Application-Id': applicationId,
+      'X-Parse-REST-API-Key': restApiKey,
+      'Content-Type': 'application/json',
+    };
+
+    var request = http.Request(
+      'PUT',
+      Uri.parse('$apiUrl/$objectId'),
+    );
+
+    request.body = json.encode({
+      "name": cliente.nome,
+      "password": 'senha',
+      "email": 'testt email',
+      "address": {
+        "cep": cliente.cep,
+        "client": cliente.nome,
+        "road": cliente.rua,
+        "bairro": cliente.bairro,
+        "number": cliente.numero,
+        "city": cliente.cidade,
+      },
+    });
+
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      print('Cliente atualizado com sucesso.');
+    } else {
+      print('Erro ao atualizar o cliente: ${response.reasonPhrase}');
+    }
+  }
+
   Future<void> deleteData(String objectId) async {
     var headers = {
       'X-Parse-Application-Id': applicationId,

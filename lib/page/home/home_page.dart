@@ -38,14 +38,6 @@ class _HomePageState extends State<HomePage> {
     _loadDataFromApi();
   }
 
-  void openEditDialog(ClienteModel cliente) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return EditClientDialog(cliente: cliente);
-      },
-    );
-  }
 
   void toggleCard() {
     setState(() {
@@ -346,30 +338,6 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class EditClientDialog extends StatelessWidget {
-  final ClienteModel cliente;
-
-  const EditClientDialog({super.key, required this.cliente});
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Editar Cliente'),
-      content: CardRegister(
-        nomeController: TextEditingController(text: cliente.nome),
-        ruaController: TextEditingController(text: cliente.rua),
-        bairroController: TextEditingController(text: cliente.bairro),
-        numeroController: TextEditingController(text: cliente.numero),
-        cidadeController: TextEditingController(text: cliente.cidade),
-        cepController: TextEditingController(text: cliente.cep),
-        onSavePressed: () {
-          Navigator.of(context).pop();
-        },
-        isCardOpen: true, // Abra o card no diálogo
-      ),
-    );
-  }
-}
 
 class ViewClientDetailsDialog extends StatelessWidget {
   final ClienteModel cliente;
