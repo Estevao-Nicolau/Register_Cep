@@ -19,7 +19,7 @@ class ListClients extends StatefulWidget {
 }
 
 class _ListClientsState extends State<ListClients> {
-  List<ClienteModel>? clients; 
+  List<ClienteModel>? clients;
   final api = Back4appAPI();
 
   @override
@@ -29,30 +29,30 @@ class _ListClientsState extends State<ListClients> {
   }
 
   Future<void> _loadDataFromApi() async {
-  try {
-    final apiResults = await api.fetchData();
+    try {
+      final apiResults = await api.fetchData();
 
-    if (apiResults != null) {
-      setState(() {
-        clients = apiResults.map((result) {
-          return ClienteModel(
-            nome: result.name,
-            rua: result.address?.road,
-            bairro: result.address?.bairro,
-            numero: result.address?.number,
-            cidade: result.address?.city,
-            cep: result.address?.cep,
-          );
-        }).toList();
-      });
-    } else {
-      // Lidar com o caso em que apiResults é nulo ou vazio, se necessário.
+      if (apiResults != null) {
+        setState(() {
+          clients = apiResults.map((result) {
+            return ClienteModel(
+              objectId: result.objectId,
+              nome: result.name,
+              rua: result.address?.road,
+              bairro: result.address?.bairro,
+              numero: result.address?.number,
+              cidade: result.address?.city,
+              cep: result.address?.cep,
+            );
+          }).toList();
+        });
+      } else {
+        // Lidar com o caso em que apiResults é nulo ou vazio, se necessário.
+      }
+    } catch (e) {
+      // Lidar com erros, por exemplo, exibir uma mensagem de erro.
     }
-  } catch (e) {
-    // Lidar com erros, por exemplo, exibir uma mensagem de erro.
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -80,18 +80,41 @@ class _ListClientsState extends State<ListClients> {
                           icon: const Icon(Icons.edit),
                           onPressed: () {
                             widget.onEdit(index);
+                            print(clients![index].objectId);
                           },
                           color: Colors
                               .orange, // Cor laranja para o botão de edição
                         ),
                         IconButton(
                           icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            widget.onRemove(
-                                index); // Chame o método para remover o cliente
+                          onPressed: () async {
+                            try {
+                              final cliente = clients![index];
+                              final objectId = cliente.objectId;
+
+                              await api.deleteData(objectId!);
+                              // Após excluir com sucesso, você pode atualizar a lista para refletir a alteração
+                              setState(() {
+                                clients!.removeAt(index);
+                              });
+                              // Exiba uma mensagem de sucesso ou qualquer feedback necessário
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content:
+                                      Text('Cliente excluído com sucesso.'),
+                                ),
+                              );
+                            } catch (e) {
+                              // Lidar com erros, por exemplo, exibir uma mensagem de erro.
+                              print('Erro ao excluir o cliente: $e');
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Erro ao excluir o cliente.'),
+                                ),
+                              );
+                            }
                           },
-                          color: Colors
-                              .red, // Cor vermelha para o botão de exclusão
+                          color: Colors.red,
                         ),
                       ],
                     ), // Defina como false para expandir somente quando clicado

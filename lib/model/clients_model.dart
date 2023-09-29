@@ -1,4 +1,5 @@
 class ClienteModel {
+  String? objectId;
   String? nome;
   String? bairro;
   String? rua;
@@ -7,6 +8,7 @@ class ClienteModel {
   String? cep;
 
   ClienteModel({
+    required this.objectId,
     required this.nome,
     required this.rua,
     required this.bairro,

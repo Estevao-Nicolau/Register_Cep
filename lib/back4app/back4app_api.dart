@@ -33,35 +33,56 @@ class Back4appAPI {
   }
 
   Future<void> postData(ClienteModel cliente) async {
-  var headers = {
-    'X-Parse-Application-Id': applicationId,
-    'X-Parse-REST-API-Key': restApiKey,
-    'Content-Type': 'application/json'
-  };
-  var request = http.Request(
-      'POST', Uri.parse('https://parseapi.back4app.com/classes/UserData'));
-  request.body = json.encode({
-    "name": cliente.nome,
-    "password": 'senha',
-    "email": 'testt email',
-    "address": {
-      "cep": cliente.cep,
-      "client": cliente.nome,
-      "road": cliente.rua,
-      "bairro": cliente.bairro,
-      "number": cliente.numero,
-      "city": cliente.cidade
+    var headers = {
+      'X-Parse-Application-Id': applicationId,
+      'X-Parse-REST-API-Key': restApiKey,
+      'Content-Type': 'application/json'
+    };
+    var request = http.Request(
+        'POST', Uri.parse('https://parseapi.back4app.com/classes/UserData'));
+    request.body = json.encode({
+      "name": cliente.nome,
+      "password": 'senha',
+      "email": 'testt email',
+      "address": {
+        "cep": cliente.cep,
+        "client": cliente.nome,
+        "road": cliente.rua,
+        "bairro": cliente.bairro,
+        "number": cliente.numero,
+        "city": cliente.cidade
+      }
+    });
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 201) {
+      print('Cliente salvo com sucesso.');
+    } else {
+      print('Erro ao salvar o cliente: ${response.reasonPhrase}');
     }
-  });
-  request.headers.addAll(headers);
-
-  http.StreamedResponse response = await request.send();
-
-  if (response.statusCode == 201) {
-    print('Cliente salvo com sucesso.');
-  } else {
-    print('Erro ao salvar o cliente: ${response.reasonPhrase}');
   }
-}
 
+  Future<void> deleteData(String objectId) async {
+    var headers = {
+      'X-Parse-Application-Id': applicationId,
+      'X-Parse-REST-API-Key': restApiKey,
+    };
+
+    var request = http.Request(
+      'DELETE',
+      Uri.parse('$apiUrl/$objectId'),
+    );
+
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      print('Data with objectId $objectId deleted successfully.');
+    } else {
+      print('Error deleting data: ${response.reasonPhrase}');
+    }
+  }
 }

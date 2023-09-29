@@ -86,6 +86,7 @@ class _HomePageState extends State<HomePage> {
         setState(() {
           clients = apiResults.map((result) {
             return ClienteModel(
+              objectId: result.objectId,
               nome: result.name,
               rua: result.address?.road,
               bairro: result.address?.bairro,
@@ -153,6 +154,7 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 setState(() {
                   clientes[index] = ClienteModel(
+                    objectId: clientes[index].objectId,
                     nome: nomeController.text,
                     rua: ruaController.text,
                     bairro: bairroController.text,
@@ -160,7 +162,10 @@ class _HomePageState extends State<HomePage> {
                     cidade: cidadeController.text,
                     cep: cepController.text,
                   );
-                });
+                  print(clientes[index].objectId);
+                },
+               
+                );
                 Navigator.of(context).pop(true);
               },
               child: const Text('Salvar'),
@@ -266,6 +271,7 @@ class _HomePageState extends State<HomePage> {
                 setState(() async {
                   isCardOpen = false;
                   ClienteModel novoCliente = ClienteModel(
+                    objectId: null,
                     nome: nomeController.text,
                     rua: ruaController.text,
                     bairro: bairroController.text,
@@ -294,6 +300,7 @@ class _HomePageState extends State<HomePage> {
                 }
                 cliente.add(
                   ClienteModel(
+                    objectId: null,
                     nome: nomeController.text,
                     rua: ruaController.text,
                     bairro: bairroController.text,
