@@ -181,7 +181,9 @@ class EditClientDialog extends StatefulWidget {
   final ClienteModel cliente;
   final Function(ClienteModel) onEdit; // Adicione este parâmetro
 
-  const EditClientDialog({Key? key, required this.cliente, required this.onEdit}) : super(key: key);
+  const EditClientDialog(
+      {Key? key, required this.cliente, required this.onEdit})
+      : super(key: key);
 
   @override
   _EditClientDialogState createState() => _EditClientDialogState();
@@ -210,34 +212,42 @@ class _EditClientDialogState extends State<EditClientDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      scrollable: true, // Permitir rolagem
       title: const Text('Editar Cliente'),
-      content: CardRegister(
-        nomeController: nomeController,
-        ruaController: ruaController,
-        bairroController: bairroController,
-        numeroController: numeroController,
-        cidadeController: cidadeController,
-        cepController: cepController,
-        onSavePressed: () async {
-          // Create a new ClienteModel with updated data
-          ClienteModel updatedClient = ClienteModel(
-            objectId: widget.cliente.objectId,
-            nome: nomeController.text,
-            rua: ruaController.text,
-            bairro: bairroController.text,
-            numero: numeroController.text,
-            cidade: cidadeController.text,
-            cep: cepController.text,
-          );
+      content: SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: 400, // Defina o tamanho máximo desejado
+          ),
+          child: CardRegister(
+            nomeController: nomeController,
+            ruaController: ruaController,
+            bairroController: bairroController,
+            numeroController: numeroController,
+            cidadeController: cidadeController,
+            cepController: cepController,
+            onSavePressed: () async {
+              // Create a new ClienteModel with updated data
+              ClienteModel updatedClient = ClienteModel(
+                objectId: widget.cliente.objectId,
+                nome: nomeController.text,
+                rua: ruaController.text,
+                bairro: bairroController.text,
+                numero: numeroController.text,
+                cidade: cidadeController.text,
+                cep: cepController.text,
+              );
 
-          // Call the _handleEdit method in the parent widget to update the client data
-          widget.onEdit(updatedClient);
+              // Call the _handleEdit method in the parent widget to update the client data
+              widget.onEdit(updatedClient);
 
-          // Close the dialog
-          Navigator.of(context).pop();
-        },
+              // Close the dialog
+              Navigator.of(context).pop();
+            },
 
-        isCardOpen: true, // Open the card in the dialog
+            isCardOpen: true, // Open the card in the dialog
+          ),
+        ),
       ),
     );
   }

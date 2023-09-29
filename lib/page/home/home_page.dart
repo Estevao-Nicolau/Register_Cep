@@ -251,7 +251,10 @@ class _HomePageState extends State<HomePage> {
             },
           ),
 
-          Expanded(
+          AnimatedContainer(
+  duration: const Duration(milliseconds: 500), // Duração da animação
+  curve: Curves.easeInOut, // Curva de animação
+  height: isCardOpen ? 500.0 : 0.0,
             child: CardRegister(
               nomeController: nomeController,
               ruaController: ruaController,
@@ -301,7 +304,7 @@ class _HomePageState extends State<HomePage> {
                     cep: cepController.text,
                   ),
                 );
-
+            
                 print(cliente[0].toJson());
               },
               isCardOpen: isCardOpen,
